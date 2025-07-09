@@ -51,7 +51,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
             <p>{movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}</p>
           </div>
           <span>·</span>
-          <p className="language">
+          <p className="lang">
             {movie.original_language ? movie.original_language : "N/A"}
           </p>
           <span>·</span>

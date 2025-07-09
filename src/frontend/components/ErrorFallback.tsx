@@ -2,14 +2,12 @@ import * as Sentry from "@sentry/react";
 
 interface SentryErrorFallbackProps {
   error: unknown;
-  componentStack: string;
   eventId: string;
   resetError(): void;
 }
 
 export const ErrorFallback = ({
   error,
-  componentStack,
   eventId,
   resetError,
 }: SentryErrorFallbackProps) => {
