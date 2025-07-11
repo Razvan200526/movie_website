@@ -160,3 +160,39 @@
         display: none;
     }
 }
+
+/* Netflix-specific styling */
+@layer utilities {
+    .netflix-card-shadow {
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8);
+    }
+
+    .netflix-gradient {
+        background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    .netflix-button {
+        @apply bg-red-600 text-white px-4 py-1 font-medium rounded-sm hover:bg-red-700 transition-colors duration-200;
+    }
+
+    .netflix-row {
+        @apply -mx-4 px-4 py-4 overflow-x-auto hide-scrollbar;
+    }
+
+    .netflix-row-container {
+        @apply flex space-x-2 pb-4;
+    }
+}
+
+/* Netflix card hover effect */
+.movie-card-hover {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.movie-card-hover:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+}

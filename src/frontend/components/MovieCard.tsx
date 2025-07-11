@@ -1,65 +1,44 @@
-import * as Sentry from "@sentry/react";
-
-interface Movie {
-  id: number;
-  title: string;
-  vote_average: number;
-  poster_path: string;
-  release_date: string;
-  original_language: string;
-}
-
-interface MovieCardProps {
-  movie: Movie;
-}
-
-export const MovieCard = ({ movie }: MovieCardProps) => {
-  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    // Log image loading errors to Sentry
-    Sentry.captureException(new Error("Movie poster failed to load"), {
-      tags: {
-        section: "movie_card",
-        error_type: "image_load",
-      },
-      extra: {
-        movieId: movie.id,
-        movieTitle: movie.title,
-        posterPath: movie.poster_path,
-        imageUrl: (event.target as HTMLImageElement).src,
-      },
-    });
+interface MovieProps {
+  movie: {
+    id: number;
+    title: string;
+    poster_path: string;
+    vote_average: number;
+    release_date: string;
+    overview: string;
   };
+}
+
+export function MovieCard({ movie }: MovieProps) {
+  const posterUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "https://via.placeholder.com/500x750?text=No+Image";
+
+  const releaseYear = movie.release_date?.split("-")[0] || "Unknown";
 
   return (
-    <div className="movie-card">
-      <img
-        src={
-          movie.poster_path
-            ? `https://image.tmdb.org/t/p/w300/${movie.poster_path}`
-            : `no-movie.png`
-        }
-        alt={movie.title}
-        onError={handleImageError}
-      />
-
-      <div className="mt-4">
-        <h3>{movie.title}</h3>
-
-        <div className="content">
-          <div className="rating">
-            <img src="/star.svg" alt="Star Icon" />
-            <p>{movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}</p>
+    <div className="relative group">
+      <div className="aspect-[2/3] rounded-md overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:z-10">
+        <img
+          src={posterUrl}
+          alt={movie.title}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute bottom-0 left-0 right-0 p-3">
+            <h3 className="text-white font-medium line-clamp-1">
+              {movie.title}
+            </h3>
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-green-500 text-sm font-medium">
+                {Math.round(movie.vote_average * 10)}% Match
+              </span>
+              <span className="text-gray-300 text-sm">{releaseYear}</span>
+            </div>
           </div>
-          <span>·</span>
-          <p className="lang">
-            {movie.original_language ? movie.original_language : "N/A"}
-          </p>
-          <span>·</span>
-          <p className="year">
-            {movie.release_date ? movie.release_date.split("-")[0] : "N/A"}
-          </p>
         </div>
       </div>
     </div>
   );
-};
+}

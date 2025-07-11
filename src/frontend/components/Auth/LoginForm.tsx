@@ -57,28 +57,56 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         console.log("Submitting login form:", { username, password });
         mutation.mutate({ username, password });
       }}
+      className="space-y-4"
     >
-      <input
-        id="username"
-        name="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
-      <input
-        id="password"
-        name="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        type="password"
-        placeholder="Password"
-      />
-      <button type="submit" disabled={mutation.status === "pending"}>
-        Login
+      <div className="space-y-1">
+        <input
+          id="username"
+          name="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Email or phone number"
+          className="w-full px-4 py-3 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600"
+          required
+        />
+      </div>
+
+      <div className="space-y-1">
+        <input
+          id="password"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          placeholder="Password"
+          className="w-full px-4 py-3 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={mutation.status === "pending"}
+        className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {mutation.status === "pending" ? "Signing In..." : "Sign In"}
       </button>
+
       {mutation.status === "error" && (
-        <div style={{ color: "red" }}>{mutation.error?.message}</div>
+        <div className="text-red-500 text-sm p-2 bg-red-500/10 rounded">
+          {mutation.error?.message}
+        </div>
       )}
+
+      <div className="flex items-center justify-between text-sm text-gray-400">
+        <div className="flex items-center">
+          <input type="checkbox" id="remember" className="mr-1 text-red-600" />
+          <label htmlFor="remember">Remember me</label>
+        </div>
+        <a href="#" className="hover:underline">
+          Need help?
+        </a>
+      </div>
     </form>
   );
 }
