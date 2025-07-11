@@ -22,13 +22,41 @@ console.log("PORT variable:", PORT);
 
 const app = express();
 
-app.use(cors());
+// Configure CORS properly
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }),
+);
 app.use(bodyParser.json());
 
-createUserTable().then(() => {
-  console.log("User table ready");
+// Add error handling for database initialization
+async function initializeDatabase() {
+  try {
+    await createUserTable();
+    console.log("User table ready");
+  } catch (error) {
+    console.error("Database initialization failed:", error);
+    process.exit(1);
+  }
+}
+
+// Add process event handlers
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
 });
 
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
+// Routes
 app.post("/api/register", async (req, res) => {
   console.log("Register request received:", req.body);
   const { username, password } = req.body;
@@ -88,6 +116,132 @@ app.get("/api/profile", (req, res) => {
   res.json({ profile: payload });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Add a health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
+
+// TMDB proxy endpoints
+app.get("/api/tmdb/discover", async (req, res) => {
+  try {
+    // Use the TMDB_API_KEY from your .env file
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    console.log("TMDB_API_KEY exists:", !!TMDB_API_KEY);
+
+    if (!TMDB_API_KEY) {
+      console.error("TMDB API key not found in environment variables");
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+
+    console.log("Fetching movies from TMDB API...");
+    const response = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${TMDB_API_KEY}`,
+        },
+      },
+    );
+
+    console.log("TMDB API response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("TMDB API error:", response.status, errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+
+    const data: any = await response.json();
+    console.log("Successfully fetched", data.results?.length || 0, "movies");
+    res.json(data);
+  } catch (error: any) {
+    console.error("TMDB discover error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch movies", details: error.message });
+  }
+});
+
+app.get("/api/tmdb/search", async (req, res) => {
+  try {
+    const { query } = req.query;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+
+    if (!TMDB_API_KEY) {
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+
+    if (!query) {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    console.log("Searching TMDB for:", query);
+    const response = await fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query as string)}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${TMDB_API_KEY}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("TMDB search API error:", response.status, errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+
+    const data: any = await response.json();
+    console.log("Search results:", data.results?.length || 0, "movies");
+    res.json(data);
+  } catch (error: any) {
+    console.error("TMDB search error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to search movies", details: error.message });
+  }
+});
+
+// Initialize database and start server
+async function startServer() {
+  try {
+    await initializeDatabase();
+
+    const server = app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(
+        `Health check available at http://localhost:${PORT}/api/health`,
+      );
+    });
+
+    // Handle server errors
+    server.on("error", (error) => {
+      console.error("Server error:", error);
+      process.exit(1);
+    });
+
+    // Graceful shutdown
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received, shutting down gracefully");
+      server.close(() => {
+        console.log("Server closed");
+        process.exit(0);
+      });
+    });
+
+    process.on("SIGINT", () => {
+      console.log("SIGINT received, shutting down gracefully");
+      server.close(() => {
+        console.log("Server closed");
+        process.exit(0);
+      });
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+startServer();

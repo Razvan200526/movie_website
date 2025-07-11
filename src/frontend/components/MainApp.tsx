@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Search from "./search";
+import Search from "../components/search";
 import { useQuery } from "@tanstack/react-query";
-import { MovieCard } from "./MovieCard";
+import { MovieCard } from "../components/MovieCard";
 import { LogoutButton } from "./Auth/Logout";
 import VideoBackground from "./VideoBackGround.tsx/VideoBackGround";
 
@@ -10,23 +10,10 @@ interface MainAppProps {
   onLogout: () => void;
 }
 
-const API_BASE_URL = "https://api.themoviedb.org/3";
-const API_KEY = import.meta.env.VITE_API_KEY;
-
-const API_OPTIONS = {
-  method: "GET",
-  headers: {
-    Authorization: `Bearer ${API_KEY}`,
-    content: "application/json",
-    accept: "application/json",
-  },
-};
+const API_BASE_URL = "http://localhost:5001/api/tmdb"; // Use your backend proxy
 
 const fetchMovies = async () => {
-  const response = await fetch(
-    `http://localhost:5000/api/tmdb/discover`,
-    API_OPTIONS,
-  );
+  const response = await fetch(`${API_BASE_URL}/discover`);
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -101,7 +88,7 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
         {movies.length > 0 && (
           <VideoBackground
-            movieId={movies[0]?.id}
+            movieId={movies[0].id}
             fallbackImage={`https://image.tmdb.org/t/p/original${movies[0]?.backdrop_path}`}
           />
         )}
