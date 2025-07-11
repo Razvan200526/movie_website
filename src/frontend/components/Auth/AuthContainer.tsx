@@ -3,7 +3,7 @@ import LoginForm from "./LoginForm";
 import { LogoutButton } from "./Logout";
 
 export default function AuthContainer() {
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [_authToken, setAuthToken] = useState<string | null>(null);
   const [isAuthentificated, setIsAuthentificated] = useState<boolean>(false);
 
   useEffect(() => {

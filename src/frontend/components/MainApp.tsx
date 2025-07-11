@@ -1,8 +1,9 @@
 import { useState } from "react";
-import Search from "../components/search";
+import Search from "./search";
 import { useQuery } from "@tanstack/react-query";
-import { MovieCard } from "../components/MovieCard";
+import { MovieCard } from "./MovieCard";
 import { LogoutButton } from "./Auth/Logout";
+import VideoBackground from "./VideoBackGround.tsx/VideoBackGround";
 
 interface MainAppProps {
   token: string | null;
@@ -15,14 +16,15 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 const API_OPTIONS = {
   method: "GET",
   headers: {
-    accept: "application/json",
     Authorization: `Bearer ${API_KEY}`,
+    content: "application/json",
+    accept: "application/json",
   },
 };
 
 const fetchMovies = async () => {
   const response = await fetch(
-    `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`,
+    `http://localhost:5000/api/tmdb/discover`,
     API_OPTIONS,
   );
 
@@ -34,7 +36,7 @@ const fetchMovies = async () => {
   return data.results;
 };
 
-export default function MainApp({ token, onLogout }: MainAppProps) {
+export default function MainApp({ token: _token, onLogout }: MainAppProps) {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const {
@@ -98,12 +100,9 @@ export default function MainApp({ token, onLogout }: MainAppProps) {
       {/* Hero Banner */}
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
         {movies.length > 0 && (
-          <div
-            className="absolute inset-0 bg-cover bg-center z-0"
-            style={{
-              backgroundImage: `url(https://image.tmdb.org/t/p/original${movies[0]?.backdrop_path})`,
-              backgroundPosition: "center 20%",
-            }}
+          <VideoBackground
+            movieId={movies[0]?.id}
+            fallbackImage={`https://image.tmdb.org/t/p/original${movies[0]?.backdrop_path}`}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10"></div>
