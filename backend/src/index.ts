@@ -7,7 +7,6 @@ import { registerUser, loginUser, verifyToken } from "./auth";
 import type { JwtPayload } from "jsonwebtoken";
 import { existsSync, readFileSync } from "fs";
 
-// Debug: Show working directory and .env status
 console.log("CWD:", process.cwd());
 console.log(".env exists:", existsSync(".env"));
 if (existsSync(".env")) {
@@ -22,7 +21,6 @@ console.log("PORT variable:", PORT);
 
 const app = express();
 
-// Configure CORS properly
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:3000"],
@@ -34,7 +32,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-// Add error handling for database initialization
 async function initializeDatabase() {
   try {
     await createUserTable();
@@ -45,7 +42,6 @@ async function initializeDatabase() {
   }
 }
 
-// Add process event handlers
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
   process.exit(1);
@@ -56,7 +52,6 @@ process.on("unhandledRejection", (reason, promise) => {
   process.exit(1);
 });
 
-// Routes
 app.post("/api/register", async (req, res) => {
   console.log("Register request received:", req.body);
   const { username, password } = req.body;
@@ -116,15 +111,12 @@ app.get("/api/profile", (req, res) => {
   res.json({ profile: payload });
 });
 
-// Add a health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-// TMDB proxy endpoints
 app.get("/api/tmdb/discover", async (req, res) => {
   try {
-    // Use the TMDB_API_KEY from your .env file
     const TMDB_API_KEY = process.env.TMDB_API_KEY;
     console.log("TMDB_API_KEY exists:", !!TMDB_API_KEY);
 
@@ -204,7 +196,6 @@ app.get("/api/tmdb/search", async (req, res) => {
   }
 });
 
-// Initialize database and start server
 async function startServer() {
   try {
     await initializeDatabase();
@@ -216,15 +207,13 @@ async function startServer() {
       );
     });
 
-    // Handle server errors
     server.on("error", (error) => {
       console.error("Server error:", error);
       process.exit(1);
     });
 
-    // Graceful shutdown
     process.on("SIGTERM", () => {
-      console.log("SIGTERM received, shutting down gracefully");
+      console.log("SIGTERM received, shutting down");
       server.close(() => {
         console.log("Server closed");
         process.exit(0);
@@ -232,7 +221,7 @@ async function startServer() {
     });
 
     process.on("SIGINT", () => {
-      console.log("SIGINT received, shutting down gracefully");
+      console.log("SIGINT received, shutting down");
       server.close(() => {
         console.log("Server closed");
         process.exit(0);

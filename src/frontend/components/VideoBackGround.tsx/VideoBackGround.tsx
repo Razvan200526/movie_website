@@ -15,7 +15,6 @@ export default function VideoBackground({
   const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef<HTMLDivElement>(null);
 
-  // Check for mobile devices to avoid loading videos on mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -35,7 +34,6 @@ export default function VideoBackground({
         setIsLoading(true);
         setHasError(false);
 
-        // Get the API key from environment variables
         const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
         console.log("Fetching video for movie ID:", movieId);

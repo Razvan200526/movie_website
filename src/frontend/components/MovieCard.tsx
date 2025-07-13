@@ -1,4 +1,6 @@
-interface MovieProps {
+import { MovieType } from "./MainApp";
+
+export interface MovieProps {
   movie: {
     id: number;
     title: string;
@@ -7,9 +9,17 @@ interface MovieProps {
     release_date: string;
     overview: string;
   };
+  onHoverStart?: (movie: MovieType) => void;
+  onHoverEnd?: () => void;
+  onClick?: (movie: MovieProps["movie"]) => void;
 }
 
-export function MovieCard({ movie }: MovieProps) {
+export function MovieCard({
+  movie,
+  onClick,
+  onHoverStart,
+  onHoverEnd,
+}: MovieProps) {
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : "https://via.placeholder.com/500x750?text=No+Image";
@@ -17,7 +27,12 @@ export function MovieCard({ movie }: MovieProps) {
   const releaseYear = movie.release_date?.split("-")[0] || "Unknown";
 
   return (
-    <div className="relative group">
+    <div
+      className="relative group cursor-pointer"
+      onClick={() => onClick?.(movie)}
+      onMouseEnter={() => onHoverStart?.(movie)}
+      onMouseLeave={onHoverEnd}
+    >
       <div className="aspect-[2/3] rounded-md overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:z-10">
         <img
           src={posterUrl}

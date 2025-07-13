@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { TrailerModal } from "./TrailerModal";
+import { useState, useRef } from "react";
 import Search from "../components/search";
 import { useQuery } from "@tanstack/react-query";
 import { MovieCard } from "../components/MovieCard";
 import { LogoutButton } from "./Auth/Logout";
 import VideoBackground from "./VideoBackGround.tsx/VideoBackGround";
-
+import { MovieProps } from "../components/MovieCard";
 interface MainAppProps {
   token: string | null;
   onLogout: () => void;
 }
 
-const API_BASE_URL = "http://localhost:5001/api/tmdb"; // Use your backend proxy
+export type MovieType = MovieProps["movie"];
+const API_BASE_URL = "http://localhost:5001/api/tmdb";
 
 const fetchMovies = async () => {
   const response = await fetch(`${API_BASE_URL}/discover`);
@@ -25,7 +27,20 @@ const fetchMovies = async () => {
 
 export default function MainApp({ token: _token, onLogout }: MainAppProps) {
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedMovie, setSelectedMovie] = useState<MovieType | null>(null);
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const handleHoverStart = (movie: MovieType) => {
+    hoverTimeout.current = setTimeout(() => {
+      setSelectedMovie(movie);
+    }, 3000);
+  };
 
+  const handleHoverEnd = () => {
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+      hoverTimeout.current = null;
+    }
+  };
   const {
     data: movies = [],
     isLoading,
@@ -135,11 +150,23 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredMovies.map((movie: any) => (
-              <MovieCard key={movie.id} movie={movie} />
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onClick={setSelectedMovie}
+                onHoverStart={handleHoverStart}
+                onHoverEnd={handleHoverEnd}
+              />
             ))}
           </div>
         )}
       </div>
+      {selectedMovie && (
+        <TrailerModal
+          movie={selectedMovie}
+          onClose={() => setSelectedMovie(null)}
+        />
+      )}
     </div>
   );
 }

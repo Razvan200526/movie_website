@@ -18,7 +18,6 @@ function AppContent() {
   function handleLogin(newToken: string) {
     console.log("handleLogin called with token:", newToken);
 
-    // Check if token is valid
     if (!newToken || typeof newToken !== "string" || newToken.length < 5) {
       console.error("Invalid token received:", newToken);
       return;
@@ -28,7 +27,6 @@ function AppContent() {
     localStorage.setItem("token", newToken);
     console.log("Token stored, redirecting now");
 
-    // Explicitly navigate to the main app route
     navigate("/");
   }
 

@@ -97,12 +97,12 @@
         @apply space-y-9;
 
         & ul {
-            @apply grid grid-cols-1 gap-5 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+            @apply grid grid-cols-1 gap-10 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
         }
     }
 
     .movie-card {
-        @apply bg-dark-100 p-20 rounded-2xl shadow-inner shadow-light-100/10;
+        @apply mx-5 bg-dark-100 p-20 rounded-2xl shadow-inner shadow-light-100/10;
 
         & img {
             @apply rounded-lg h-auto w-full;
