@@ -87,7 +87,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       <button
         type="submit"
         disabled={mutation.status === "pending"}
-        className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition duration-200 font-medium disabled:opacity-50 cursor-pointer"
       >
         {mutation.status === "pending" ? "Signing In..." : "Sign In"}
       </button>
@@ -99,7 +99,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       )}
 
       <div className="flex items-center justify-between text-sm text-gray-400">
-        <div className="flex items-center">
+        <div className="flex items-center cursor-pointer">
           <input type="checkbox" id="remember" className="mr-1 text-red-600" />
           <label htmlFor="remember">Remember me</label>
         </div>

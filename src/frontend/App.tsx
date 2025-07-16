@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import AuthPage from "./components/Auth/AuthPage";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import MainApp from "./components/MainApp";
+import TVShowsPage from "./components/TVShowsPage";
+import MediaPage from "./components/MediaPage";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -46,6 +48,12 @@ function AppContent() {
             <MainApp onLogout={handleLogout} token={token} />
           </PrivateRoute>
         }
+      />
+      <Route path="/movie/:id" element={<MediaPage />} />
+      <Route path="/tv/:id" element={<MediaPage />} />
+      <Route
+        path="/tvshows"
+        element={<TVShowsPage onLogout={handleLogout} token={token} />}
       />
     </Routes>
   );

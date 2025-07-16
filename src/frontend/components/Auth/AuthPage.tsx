@@ -11,7 +11,6 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
 
   return (
     <div className="min-h-screen bg-black bg-opacity-90 flex flex-col items-center justify-center px-4">
-      {/* Netflix Logo */}
       <div className="w-full max-w-md mb-8 flex justify-center">
         <svg
           viewBox="0 0 111 30"

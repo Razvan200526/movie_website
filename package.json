@@ -9,7 +9,10 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@heroui/react": "^2.7.11",
+    "@mui/material": "^7.2.0",
     "@sentry/bun": "^9.35.0",
     "@sentry/react": "^9.35.0",
     "@tailwindcss/vite": "^4.1.11",
@@ -24,6 +27,7 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.0",
     "jsonwebtoken": "^9.0.2",
+    "mui": "^0.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",

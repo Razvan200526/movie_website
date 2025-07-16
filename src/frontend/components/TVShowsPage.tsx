@@ -1,64 +1,46 @@
-import { TrailerModal } from "./TrailerModal";
-import { useState, useRef } from "react";
-import Search from "../components/search";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { MediaCard, MediaItem } from "../components/MediaCard";
-import { LogoutButton } from "./Auth/Logout";
+import { MediaCard, MediaItem } from "./MediaCard";
 import VideoBackground from "./VideoBackGround";
+import { LogoutButton } from "./Auth/Logout";
 import { Link } from "react-router-dom";
-interface MainAppProps {
+
+interface TVShowsPageProps {
   token: string | null;
   onLogout: () => void;
 }
 
-export type MovieType = MediaItem;
-const API_BASE_URL = "http://localhost:5001/api/tmdb";
+const API_BASE_URL = "/api/tmdb";
 
-const fetchMovies = async () => {
-  const response = await fetch(`${API_BASE_URL}/discover`);
-
+const fetchTVShows = async () => {
+  const response = await fetch(`${API_BASE_URL}/discover/tv`);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-
   const data = await response.json();
   return data.results;
 };
 
-export default function MainApp({ token: _token, onLogout }: MainAppProps) {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedMovie, setSelectedMovie] = useState<MediaItem | null>(null);
-  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
-  const handleHoverStart = (movie: MediaItem) => {
-    hoverTimeout.current = setTimeout(() => {
-      setSelectedMovie(movie);
-    }, 2000);
-  };
+export default function TVShowsPage({
+  token: _token,
+  onLogout,
+}: TVShowsPageProps) {
+  const [_selectedShow, setSelectedShow] = useState<MediaItem | null>(null);
 
-  const handleHoverEnd = () => {
-    if (hoverTimeout.current) {
-      clearTimeout(hoverTimeout.current);
-      hoverTimeout.current = null;
-    }
-  };
   const {
-    data: movies = [],
+    data: shows = [],
     isLoading,
     error,
     isError,
   } = useQuery({
-    queryKey: ["movies", "popular"],
-    queryFn: fetchMovies,
+    queryKey: ["tv", "popular"],
+    queryFn: fetchTVShows,
     refetchOnWindowFocus: false,
-  });
-
-  const filteredMovies = movies.filter((movie: any) => {
-    return movie.title.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Netflix Header Bar */}
+      {/* Header */}
       <header className="bg-black/95 px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div className="flex items-center">
           {/* Netflix Logo */}
@@ -73,58 +55,36 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
             </g>
           </svg>
 
-          {/* Navigation links */}
           <nav className="hidden md:flex space-x-4">
-            <Link to="/" className="font-medium text-white hover:text-gray-300">
+            <Link to="/" className="font-medium text-gray-300 hover:text-white">
               Home
             </Link>
             <Link
               to="/tvshows"
-              className="font-medium text-gray-300 hover:text-white"
+              className="font-medium text-white hover:text-gray-300"
             >
               TV Shows
-            </Link>
-            <Link
-              to="/movies"
-              className="font-medium text-gray-300 hover:text-white"
-            >
-              Movies
-            </Link>
-            <Link
-              to="new-popular"
-              className="font-medium text-gray-300 hover:text-white"
-            >
-              New & Popular
-            </Link>
-            <Link
-              to="my-list"
-              className="font-medium text-gray-300 hover:text-white"
-            >
-              My List
             </Link>
           </nav>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <LogoutButton onLogout={onLogout} />
-        </div>
+        <LogoutButton onLogout={onLogout} />
       </header>
 
       {/* Hero Banner */}
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
-        {movies.length > 0 && (
+        {shows.length > 0 && (
           <VideoBackground
-            movieId={movies[0].id}
-            fallbackImage={`https://image.tmdb.org/t/p/original${movies[0]?.backdrop_path}`}
+            movieId={shows[0].id}
+            fallbackImage={`https://image.tmdb.org/t/p/original${shows[0]?.backdrop_path}`}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10"></div>
         <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
-          {movies.length > 0 && (
+          {shows.length > 0 && (
             <>
-              <h1 className="text-5xl font-bold mb-4">{movies[0]?.title}</h1>
-              <p className="text-lg max-w-2xl mb-6">{movies[0]?.overview}</p>
+              <h1 className="text-5xl font-bold mb-4">{shows[0]?.name}</h1>
+              <p className="text-lg max-w-2xl mb-6">{shows[0]?.overview}</p>
               <div className="flex space-x-4">
                 <button className="bg-white text-black px-6 py-2 rounded-md font-bold flex items-center">
                   <span className="mr-2">▶</span> Play
@@ -138,13 +98,13 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* TV Shows Grid */}
       <div className="px-4 md:px-8 py-8 -mt-10 relative z-20">
-        <h2 className="text-2xl font-bold mb-4">Popular Movies</h2>
+        <h2 className="text-2xl font-bold mb-4">Popular TV Shows</h2>
 
         {isError && (
           <div className="bg-red-900/50 text-white p-4 rounded-md mb-6">
-            <h3 className="text-xl font-bold">Error fetching movies</h3>
+            <h3 className="text-xl font-bold">Error fetching TV shows</h3>
             <p>{error instanceof Error ? error.message : String(error)}</p>
           </div>
         )}
@@ -153,33 +113,21 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
           </div>
-        ) : filteredMovies.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-xl text-gray-400">
-              No movies found matching "{searchTerm}"
-            </p>
-          </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {filteredMovies.map((movie: any) => (
+            {shows.map((show: MediaItem) => (
               <MediaCard
-                key={movie.id}
-                media={movie}
-                mediaType="movie"
-                onClick={setSelectedMovie}
-                onHoverStart={handleHoverStart}
-                onHoverEnd={handleHoverEnd}
+                key={show.id}
+                media={show}
+                mediaType="tv"
+                onClick={setSelectedShow}
+                onHoverStart={setSelectedShow}
+                onHoverEnd={() => setSelectedShow(null)}
               />
             ))}
           </div>
         )}
       </div>
-      {selectedMovie && (
-        <TrailerModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-        />
-      )}
     </div>
   );
 }

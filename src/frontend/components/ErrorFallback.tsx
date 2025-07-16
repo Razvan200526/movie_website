@@ -11,10 +11,8 @@ export const ErrorFallback = ({
   eventId,
   resetError,
 }: SentryErrorFallbackProps) => {
-  // Ensure error is captured by Sentry
   Sentry.captureException(error);
 
-  // Convert unknown error to string for display
   const errorMessage = error instanceof Error ? error.message : String(error);
 
   return (

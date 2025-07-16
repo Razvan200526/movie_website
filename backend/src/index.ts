@@ -6,14 +6,12 @@ import { createUserTable } from "./db";
 import { registerUser, loginUser, verifyToken } from "./auth";
 import type { JwtPayload } from "jsonwebtoken";
 import { existsSync, readFileSync } from "fs";
-
 console.log("CWD:", process.cwd());
 console.log(".env exists:", existsSync(".env"));
 if (existsSync(".env")) {
   console.log(".env contents:\n", readFileSync(".env", "utf8"));
 }
 
-// Debug: Show PORT from env
 console.log("PORT from env after dotenv:", process.env.PORT);
 
 const PORT = Number(process.env.PORT) || 3001;
@@ -23,11 +21,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin: ["http://localhost:5173", "http://localhost:5001"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200,
   }),
 );
 app.use(bodyParser.json());
@@ -196,6 +194,183 @@ app.get("/api/tmdb/search", async (req, res) => {
   }
 });
 
+app.get("/api/tmdb/movie/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if (!TMDB_API_KEY) {
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+    if (!id) {
+      return res.status(400).json({ error: "Movie ID is required" });
+    }
+    console.log("Fetching movie details from ID: ", id);
+    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${TMDB_API_KEY}`,
+      },
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        "TMDB movie details API error:",
+        response.status,
+        errorText,
+      );
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+    const data: any = await response.json();
+    console.log("Successfully fetched movie details for ID:", id);
+    res.json(data);
+  } catch (error: any) {
+    console.error("TMDB movie details error:", error);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch movie details", details: error.message });
+  }
+});
+
+app.get("/api/tmdb/movie/:id/videos", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if (!TMDB_API_KEY) {
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+    if (!id) {
+      return res.status(400).json({ error: "Movie ID is required" });
+    }
+    console.log("Fetching movie videos for ID:", id);
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${id}/videos`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${TMDB_API_KEY}`,
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("TMDB movie videos API error:", response.status, errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("TMDB movie videos error:", error);
+    res.status(500).json({
+      error: "Failed to fetch movie videos",
+      details: error instanceof Error ? error.message : error,
+    });
+  }
+});
+
+app.get("/api/tmdb/discover/tv", async (req, res) => {
+  try {
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if (!TMDB_API_KEY) {
+      console.error("Api key not found");
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+
+    const response = await fetch(`https://api.themoviedb.org/3/discover/tv`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${TMDB_API_KEY}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Error fetching TV Shows");
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error: any) {
+    console.error("TMDB discover/tv error : ", error);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch TV shows", details: error.message });
+  }
+});
+
+// Endpoint to fetch TV show details
+app.get("/api/tmdb/tv/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if (!TMDB_API_KEY) {
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+    if (!id) {
+      return res.status(400).json({ error: "TV Show ID is required" });
+    }
+    console.log("Fetching TV show details from ID:", id);
+    const response = await fetch(`https://api.themoviedb.org/3/tv/${id}`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${TMDB_API_KEY}`,
+      },
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        "TMDB TV show details API error:",
+        response.status,
+        errorText,
+      );
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+    const data = await response.json();
+    console.log("Successfully fetched TV show details for ID:", id);
+    res.json(data);
+  } catch (error) {
+    console.error("TMDB TV show details error:", error);
+    res.status(500).json({
+      error: "Failed to fetch TV show details",
+      details: error instanceof Error ? error.message : error,
+    });
+  }
+});
+
+// Endpoint to fetch TV show videos (trailers)
+app.get("/api/tmdb/tv/:id/videos", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if (!TMDB_API_KEY) {
+      return res.status(500).json({ error: "TMDB API key not configured" });
+    }
+    if (!id) {
+      return res.status(400).json({ error: "TV Show ID is required" });
+    }
+    console.log("Fetching TV show videos for ID:", id);
+    const response = await fetch(
+      `https://api.themoviedb.org/3/tv/${id}/videos`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${TMDB_API_KEY}`,
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("TMDB TV videos API error:", response.status, errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("TMDB TV videos error:", error);
+    res.status(500).json({
+      error: "Failed to fetch TV show videos",
+      details: error instanceof Error ? error.message : error,
+    });
+  }
+});
 async function startServer() {
   try {
     await initializeDatabase();
