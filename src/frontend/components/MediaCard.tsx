@@ -1,25 +1,6 @@
 import { useNavigate } from "react-router-dom";
-
-export interface MediaItem {
-  id: number;
-  title?: string; // For movies
-  name?: string; // For TV shows
-  poster_path: string;
-  vote_average: number;
-  release_date?: string; // For movies
-  first_air_date?: string; // For TV shows
-  overview: string;
-  backdrop_path?: string;
-}
-
-export interface MediaCardProps {
-  media: MediaItem;
-  mediaType: "movie" | "tv";
-  onHoverStart?: (media: MediaItem) => void;
-  onHoverEnd?: () => void;
-  onClick?: (media: MediaItem) => void;
-}
-
+import { MediaItem, MediaCardProps } from "../types";
+import AddToFavButton from "./AddToFavButton";
 export function MediaCard({
   media,
   mediaType,
@@ -71,6 +52,10 @@ export function MediaCard({
           </div>
         </div>
       </div>
-    </div>
+      <div className="mt-2">
+        <AddToFavButton media={media as MediaItem} />
+      </div></div>
   );
 }
+
+export type { MediaItem, MediaCardProps };

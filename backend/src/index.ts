@@ -2,10 +2,18 @@ import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { createUserTable } from "./db";
 import { registerUser, loginUser, verifyToken } from "./auth";
 import type { JwtPayload } from "jsonwebtoken";
 import { existsSync, readFileSync } from "fs";
+import {
+  createUserTable,
+  createUserListTable,
+  getUserList,
+  addToUserList,
+  removeFromUserList,
+  isInUserList,
+} from "./db";
+
 console.log("CWD:", process.cwd());
 console.log(".env exists:", existsSync(".env"));
 if (existsSync(".env")) {
@@ -33,7 +41,8 @@ app.use(bodyParser.json());
 async function initializeDatabase() {
   try {
     await createUserTable();
-    console.log("User table ready");
+    await createUserListTable();
+    console.log("Database tables ready");
   } catch (error) {
     console.error("Database initialization failed:", error);
     process.exit(1);
@@ -371,6 +380,103 @@ app.get("/api/tmdb/tv/:id/videos", async (req, res) => {
     });
   }
 });
+
+// My List endpoints
+app.get("/api/list", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const payload = verifyToken(token);
+  console.log("GET /api/list - Token payload:", payload); // Debug line
+  if (!payload || typeof payload === "string") {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  try {
+    const items = await getUserList(payload.id);
+    res.json({ results: items });
+  } catch (error) {
+    console.error("Get user list error:", error);
+    res.status(500).json({ error: "Failed to fetch user list" });
+  }
+});
+
+app.post("/api/list/add", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const payload = verifyToken(token) as any;
+  console.log("POST /api/list/add - Token payload:", payload);
+  if (!payload || typeof payload === "string" || !payload.id) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  try {
+    console.log("POST /api/list/add - req.body:", req.body); // Add this debug line
+    console.log("POST /api/list/add - req.body type:", typeof req.body); // Add this debug line
+    console.log(
+      "POST /api/list/add - Content-Type:",
+      req.headers["content-type"],
+    ); // Add this debug line
+
+    const mediaItem = req.body;
+
+    if (!mediaItem) {
+      console.error("req.body is empty or undefined");
+      return res
+        .status(400)
+        .json({ error: "No media item provided in request body" });
+    }
+    console.log("debug - req.body: ", req.body);
+    await addToUserList(payload.id, mediaItem);
+    res.json({ success: true, message: "Added to your list" });
+  } catch (error) {
+    console.error("Add to user list error:", error);
+    res.status(500).json({ error: "Failed to add to your list" });
+  }
+});
+
+app.delete("/api/list/remove/:mediaId", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const payload = verifyToken(token);
+  console.log("DELETE /api/list/remove - Token payload:", payload); // Debug line
+  if (!payload || typeof payload === "string") {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  try {
+    const mediaId = parseInt(req.params.mediaId);
+    await removeFromUserList(payload.id, mediaId);
+    res.json({ success: true, message: "Removed from your list" });
+  } catch (error) {
+    console.error("Remove from user list error:", error);
+    res.status(500).json({ error: "Failed to remove from your list" });
+  }
+});
+
 async function startServer() {
   try {
     await initializeDatabase();

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { MovieType } from "./MainApp";
+import { MediaItem } from "../types";
+import { apiClient } from "../services/api";
 
 interface TrailerModalProps {
-  movie: MovieType;
+  movie: MediaItem;
   onClose: () => void;
 }
 
@@ -14,33 +15,24 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    setShow(true); // Trigger animation on mount
+    setShow(true);
+
     const fetchTrailer = async () => {
-      const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-      const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movie.id}/videos`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${API_KEY}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Error fetching the trailer");
+      try {
+        const data = await apiClient.getMovieVideos(movie.id);
+        const trailer = data.results.find(
+          (vid) => vid.type === "Trailer" && vid.site === "YouTube",
+        );
+        setVideoKey(trailer ? trailer.key : null);
+      } catch (error) {
+        console.error("Error fetching trailer:", error);
+        setVideoKey(null);
       }
-      const data = await response.json();
-      const trailer = data.results.find(
-        (vid: any) => vid.type === "Trailer" && vid.site === "YouTube",
-      );
-      setVideoKey(trailer ? trailer.key : null);
     };
+
     fetchTrailer();
   }, [movie.id]);
 
-  // Animation classes
   const modalClasses = `transition-all duration-300 transform ${
     show ? "opacity-100 scale-100" : "opacity-0 scale-90"
   }`;
@@ -62,7 +54,7 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
             allowFullScreen
           />
         ) : (
-          <div className="flex items-center justify-center w-full h-full text-white text-xl">
+          <div className="flex items-center justify-center w-full h-full text-white text-xl bg-gray-800 rounded-lg">
             Trailer not available.
           </div>
         )}
