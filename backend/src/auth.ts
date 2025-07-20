@@ -32,7 +32,7 @@ export async function loginUser(username: string, password: string) {
     throw new Error("Invalid username or password");
   }
   const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "7d",
   });
   return { token };
 }
@@ -41,6 +41,7 @@ export function verifyToken(token: string) {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error: any) {
+    console.error("Token verification failed:", error.message);
     return null;
   }
 }

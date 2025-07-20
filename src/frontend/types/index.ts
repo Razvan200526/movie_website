@@ -11,7 +11,8 @@ export interface MediaItem {
   first_air_date?: string;
   overview: string;
   genre_ids?: number[];
-  media_type?: "movie" | "tv";
+  media_id?: number; // TMDB id for user list items
+  media_type?: string; // 'movie' or 'tv' for user list items
 }
 
 // API Response Types
@@ -62,7 +63,7 @@ export interface NavbarProps {
 
 export interface MediaCardProps {
   media: MediaItem;
-  mediaType: "movie" | "tv";
+  mediaType: string | "movie" | "tv";
   onClick?: (media: MediaItem) => void;
   onHoverStart?: (media: MediaItem) => void;
   onHoverEnd?: () => void;

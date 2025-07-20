@@ -7,7 +7,7 @@ interface VideoBackgroundProps {
   children?: React.ReactNode;
 }
 
-export default function VideoBackground({
+export default function VideoBackGround({
   movieId,
   fallbackImage,
   children,

@@ -7,7 +7,6 @@ import {
   LoginRequest,
   RegisterRequest,
 } from "../types";
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 class ApiClient {
   private baseUrl: string;
 
@@ -92,9 +91,12 @@ class ApiClient {
     );
   }
   async getUserList(token: string) {
+    // Debug: log the token value before making the request
+    console.log("[ApiClient.getUserList] Using token:", token);
     return this.request<TMDBResponse<MediaItem>>(
       API_CONFIG.ENDPOINTS.LIST.GET,
       {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       },
     );

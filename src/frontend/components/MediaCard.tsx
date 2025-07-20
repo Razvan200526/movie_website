@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { MediaItem, MediaCardProps } from "../types";
-import AddToFavButton from "./AddToFavButton";
 export function MediaCard({
   media,
   mediaType,
@@ -21,10 +20,13 @@ export function MediaCard({
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/${mediaType}/${media.id}`);
-  };
+    // Use media.media_id for user-list items, fallback to media.id for TMDB items
+    const tmdbId = media.media_id ?? media.id;
+    navigate(`/${mediaType}/${tmdbId}`);
+  }
 
   return (
+    console.log("[MediaCard] Rendering media:", media),
     <div
       className="relative group cursor-pointer"
       onClick={handleClick}
@@ -52,9 +54,7 @@ export function MediaCard({
           </div>
         </div>
       </div>
-      <div className="mt-2">
-        <AddToFavButton media={media as MediaItem} />
-      </div></div>
+      </div>
   );
 }
 

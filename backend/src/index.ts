@@ -14,12 +14,6 @@ import {
   isInUserList,
 } from "./db";
 
-console.log("CWD:", process.cwd());
-console.log(".env exists:", existsSync(".env"));
-if (existsSync(".env")) {
-  console.log(".env contents:\n", readFileSync(".env", "utf8"));
-}
-
 console.log("PORT from env after dotenv:", process.env.PORT);
 
 const PORT = Number(process.env.PORT) || 3001;
@@ -383,19 +377,25 @@ app.get("/api/tmdb/tv/:id/videos", async (req, res) => {
 
 // My List endpoints
 app.get("/api/list", async (req, res) => {
+
   const authHeader = req.headers.authorization;
+  console.log("[GET /api/list] Authorization header:", authHeader);
   if (!authHeader) {
+    console.log("[GET /api/list] No Authorization header provided");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
+  console.log("[GET /api/list] Token extracted:", token);
   if (!token) {
+    console.log("[GET /api/list] No token extracted from Authorization header");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const payload = verifyToken(token);
-  console.log("GET /api/list - Token payload:", payload); // Debug line
+  console.log("[GET /api/list] Token payload:", payload);
   if (!payload || typeof payload === "string") {
+    console.log("[GET /api/list] Invalid token or payload");
     return res.status(401).json({ error: "Invalid token" });
   }
 
@@ -409,19 +409,25 @@ app.get("/api/list", async (req, res) => {
 });
 
 app.post("/api/list/add", async (req, res) => {
+
   const authHeader = req.headers.authorization;
+  console.log("[POST /api/list/add] Authorization header:", authHeader);
   if (!authHeader) {
+    console.log("[POST /api/list/add] No Authorization header provided");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
+  console.log("[POST /api/list/add] Token extracted:", token);
   if (!token) {
+    console.log("[POST /api/list/add] No token extracted from Authorization header");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const payload = verifyToken(token) as any;
-  console.log("POST /api/list/add - Token payload:", payload);
+  console.log("[POST /api/list/add] Token payload:", payload);
   if (!payload || typeof payload === "string" || !payload.id) {
+    console.log("[POST /api/list/add] Invalid token or payload");
     return res.status(401).json({ error: "Invalid token" });
   }
 
@@ -451,19 +457,25 @@ app.post("/api/list/add", async (req, res) => {
 });
 
 app.delete("/api/list/remove/:mediaId", async (req, res) => {
+
   const authHeader = req.headers.authorization;
+  console.log("[DELETE /api/list/remove] Authorization header:", authHeader);
   if (!authHeader) {
+    console.log("[DELETE /api/list/remove] No Authorization header provided");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const token = authHeader.split(" ")[1];
+  console.log("[DELETE /api/list/remove] Token extracted:", token);
   if (!token) {
+    console.log("[DELETE /api/list/remove] No token extracted from Authorization header");
     return res.status(401).json({ error: "No token provided" });
   }
 
   const payload = verifyToken(token);
-  console.log("DELETE /api/list/remove - Token payload:", payload); // Debug line
+  console.log("[DELETE /api/list/remove] Token payload:", payload);
   if (!payload || typeof payload === "string") {
+    console.log("[DELETE /api/list/remove] Invalid token or payload");
     return res.status(401).json({ error: "Invalid token" });
   }
 
