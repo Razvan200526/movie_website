@@ -107,6 +107,7 @@ export default function MediaPage() {
           <Link to="/" className="text-blue-400 hover:text-blue-300">
             Back to Home
           </Link>
+          return <button onClick={() => { throw new Error("This is your first error!"); }}>Break the world</button>;
         </div>
       </div>
     );
@@ -202,11 +203,10 @@ export default function MediaPage() {
                 <button
                   onClick={handleListToggle}
                   disabled={isUpdatingList}
-                  className={`px-6 py-3 rounded-md font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                    isInList
-                      ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
-                      : "bg-gray-600/70 text-white hover:bg-gray-600"
-                  }`}
+                  className={`px-6 py-3 rounded-md font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${isInList
+                    ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
+                    : "bg-gray-600/70 text-white hover:bg-gray-600"
+                    }`}
                 >
                   {isUpdatingList ? (
                     <span className="flex items-center">

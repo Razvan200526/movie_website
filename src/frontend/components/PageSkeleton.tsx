@@ -1,8 +1,6 @@
 import React from "react";
 import Navbar from "./Navbar";
 
-import type { Dispatch, SetStateAction } from "react";
-
 interface PageSkeletonProps {
   children: React.ReactNode;
   onLogout?: () => void;

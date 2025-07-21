@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PageSkeleton from "./PageSkeleton";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { apiClient } from "../services/api.ts"
@@ -13,6 +13,7 @@ interface MainAppProps {
 }
 
 export default function MainApp({ token: _token, onLogout }: MainAppProps) {
+  const [visibleGenreCount, setVisibleGenreCount] = useState(5);
   const [selectedMovie, setSelectedMovie] = useState<MediaItem | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -44,9 +45,9 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
 
   const {
     data: moviesResponse,
-    isLoading,
-    error,
-    isError,
+    isLoading: _isLoading,
+    error: _error,
+    isError: _isError,
   } = useQuery({
     queryKey: ["movies", "popular"],
     queryFn: () => apiClient.getPopularMovies(),
@@ -54,6 +55,19 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
   });
 
   const movies = moviesResponse?.results || [];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
+        setVisibleGenreCount((prev) => {
+          if (prev < genres.length) return prev + 5;
+          return prev;
+        });
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [genres.length])
   return (
     <PageSkeleton
       onLogout={onLogout}
@@ -67,14 +81,19 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
       </div>
       <div className="px-4 md:px-8 py-8 -mt-10 relative z-20">
         {genresLoading && <div>Loading genres...</div>}
-        {genres.map((genre, idx) => (
+        {genres.slice(0, visibleGenreCount).map((genre, idx) => (
           <MovieRow
             key={genre.id}
             title={genre.name}
             movies={genreMovieQueries[idx].data?.results || []}
             mediaType="movie"
+            handleHoverStart={() => handleHoverStart(movies[idx])}
+            handleHoverEnd={() => handleHoverEnd()}
           />
         ))}
+        {visibleGenreCount < genres.length && (
+          <div className="text-center py-4 text-gray-400">Loading more...</div>
+        )}
       </div>
       {selectedMovie && (
         <TrailerModal

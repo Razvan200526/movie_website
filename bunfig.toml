@@ -1,0 +1,7 @@
+[install]
+# Add Node.js compatibility
+peer = true
+
+[build]
+# Enable Node.js polyfills
+target = "node"

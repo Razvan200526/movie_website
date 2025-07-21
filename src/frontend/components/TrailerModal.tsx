@@ -33,9 +33,8 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
     fetchTrailer();
   }, [movie.id]);
 
-  const modalClasses = `transition-all duration-300 transform ${
-    show ? "opacity-100 scale-100" : "opacity-0 scale-90"
-  }`;
+  const modalClasses = `transition-all duration-300 transform ${show ? "opacity-100 scale-100" : "opacity-0 scale-90"
+    }`;
 
   return (
     <div
@@ -48,7 +47,7 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
       >
         {videoKey ? (
           <iframe
-            src={`https://www.youtube.com/embed/${videoKey}?autoplay=1`}
+            src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&mute=1`}
             title="Trailer"
             className="w-full h-full rounded-lg"
             allowFullScreen

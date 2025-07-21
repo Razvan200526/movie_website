@@ -7,7 +7,7 @@ export const LogoutButton: React.FC<LogoutProps> = ({ onLogout }) => {
   return (
     <button
       onClick={onLogout}
-      className="bg-red-800 text-white px-4 py-2 rounded-md shadow hover:bg-purple-700 transition-colors"
+      className="px-4 py-2 rounded-md shadow bg-red-800 text-white border-2 border-transparent hover:scale-105 hover:border-white transition-all duration-200 cursor-pointer"
       aria-label="Logout"
     >
       Sign Out
