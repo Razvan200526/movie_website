@@ -56,9 +56,6 @@ export interface VideoResult {
 // Component Props Types
 export interface NavbarProps {
   onLogout: () => void;
-  searchTerm?: string;
-  setSearchTerm?: Dispatch<SetStateAction<string>>;
-  showSearch?: boolean;
 }
 
 export interface MediaCardProps {

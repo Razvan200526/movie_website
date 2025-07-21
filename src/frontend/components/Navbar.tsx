@@ -1,13 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { LogoutButton } from "./Auth/Logout";
-import Search from "./search";
 import { NavbarProps } from "../types";
 
 export default function Navbar({
   onLogout,
-  searchTerm = "",
-  setSearchTerm,
-  showSearch = true,
 }: NavbarProps) {
   const location = useLocation();
 
@@ -51,9 +47,6 @@ export default function Navbar({
           <Link to="/movies" className={getLinkClasses("/movies")}>
             Movies
           </Link>
-          <Link to="/new-popular" className={getLinkClasses("/new-popular")}>
-            New & Popular
-          </Link>
           <Link to="/mylist" className={getLinkClasses("/mylist")}>
             My List
           </Link>
@@ -61,9 +54,6 @@ export default function Navbar({
       </div>
 
       <div className="flex items-center space-x-4">
-        {showSearch && setSearchTerm && (
-          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-        )}
         <LogoutButton onLogout={onLogout} />
       </div>
     </header>

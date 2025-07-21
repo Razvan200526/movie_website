@@ -5,7 +5,6 @@ import { apiClient } from "../services/api.ts"
 import { TrailerModal } from "./TrailerModal";
 import VideoBackGround from "./VideoBackGround";
 import { MediaItem } from "../types";
-import { MediaCard } from "./MediaCard";
 import MovieRow from "./MovieRow.tsx";
 
 interface MainAppProps {
@@ -14,7 +13,6 @@ interface MainAppProps {
 }
 
 export default function MainApp({ token: _token, onLogout }: MainAppProps) {
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedMovie, setSelectedMovie] = useState<MediaItem | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -56,17 +54,9 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
   });
 
   const movies = moviesResponse?.results || [];
-  const filteredMovies = movies.filter((movie: MediaItem) => {
-    const title = movie.title || movie.name || "";
-    return title.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
   return (
     <PageSkeleton
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
       onLogout={onLogout}
-      showSearch={true}
     >
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
         <VideoBackGround

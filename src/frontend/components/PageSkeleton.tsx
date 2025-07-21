@@ -5,26 +5,17 @@ import type { Dispatch, SetStateAction } from "react";
 
 interface PageSkeletonProps {
   children: React.ReactNode;
-  searchTerm?: string;
-  setSearchTerm?: Dispatch<SetStateAction<string>>;
   onLogout?: () => void;
-  showSearch?: boolean;
 }
 
 export default function PageSkeleton({
   children,
-  searchTerm = "",
-  setSearchTerm,
   onLogout,
-  showSearch = true,
-} : PageSkeletonProps) {
+}: PageSkeletonProps) {
   return (
     <div>
       <Navbar
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        onLogout={onLogout ?? (() => {})}
-        showSearch={showSearch}
+        onLogout={onLogout ?? (() => { })}
       />
       <main className="container mx-auto p-4">{children}</main>
     </div>

@@ -37,9 +37,6 @@ const MyList: React.FC = () => {
   })
   return (
     <PageSkeleton
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
-      showSearch={true}
     >
       {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}

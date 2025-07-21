@@ -31,10 +31,7 @@ export default function TVShowsPage({ token: _token, onLogout }: TVShowsPageProp
   const firstShow = genreShowQueries[0]?.data?.results?.[0] || null;
   return (
     <PageSkeleton
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
       onLogout={onLogout}
-      showSearch={true}
     >
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
         <VideoBackGround
