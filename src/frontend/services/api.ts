@@ -121,6 +121,26 @@ class ApiClient {
       },
     );
   }
+  async getMovieGenres(){
+    return this.request<{genres : {id : number; name:string}[] }>(
+      "/api/tmdb/genres"
+    );
+  }
+  async getMoviesByGenre(genreId : number){
+    return this.request<TMDBResponse<MediaItem>>(
+      `/api/tmdb/genre/${genreId}/movies`
+    );
+  }
+  async getTVGenres() {
+    return this.request<{ genres: { id: number; name: string }[] }>(
+      "/api/tmdb/tv/genres"
+    );
+  }
+  async getTvShowsByGenre(genreId: number) {
+    return this.request<TMDBResponse<MediaItem>>(
+      `/api/tmdb/genre/${genreId}/shows`
+    );
+  }
 }
 
 export const apiClient = new ApiClient();

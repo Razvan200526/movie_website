@@ -54,7 +54,7 @@ export function MediaCard({
           </div>
         </div>
       </div>
-      </div>
+    </div>
   );
 }
 

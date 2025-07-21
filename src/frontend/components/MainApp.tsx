@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
 import PageSkeleton from "./PageSkeleton";
-import { useQuery } from "@tanstack/react-query";
-import {apiClient} from "../services/api.ts"
-import {TrailerModal} from "./TrailerModal";
+import { useQuery, useQueries } from "@tanstack/react-query";
+import { apiClient } from "../services/api.ts"
+import { TrailerModal } from "./TrailerModal";
 import VideoBackGround from "./VideoBackGround";
 import { MediaItem } from "../types";
 import { MediaCard } from "./MediaCard";
+import MovieRow from "./MovieRow.tsx";
 
 interface MainAppProps {
   token: string | null;
@@ -17,6 +18,19 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
   const [selectedMovie, setSelectedMovie] = useState<MediaItem | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  const { data: genresData, isLoading: genresLoading } = useQuery({
+    queryKey: ["genres"],
+    queryFn: () => apiClient.getMovieGenres(),
+  })
+  const genres = genresData?.genres || [];
+
+  const genreMovieQueries = useQueries({
+    queries: genres.map((genre) => ({
+      queryKey: ["movies", genre.id],
+      queryFn: () => apiClient.getMoviesByGenre(genre.id),
+      enabled: !!genres.length,
+    })),
+  });
   const handleHoverStart = (movie: MediaItem) => {
     hoverTimeout.current = setTimeout(() => {
       setSelectedMovie(movie);
@@ -62,19 +76,15 @@ export default function MainApp({ token: _token, onLogout }: MainAppProps) {
         {/* Add any hero/banner content here */}
       </div>
       <div className="px-4 md:px-8 py-8 -mt-10 relative z-20">
-        {isLoading && <div>Loading...</div>}
-        {isError && <div>Error: {error?.message}</div>}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {filteredMovies.map((movie: MediaItem) => (
-            <MediaCard
-              key={movie.id}
-              media={movie}
-              mediaType="movie"
-              onHoverStart={handleHoverStart}
-              onHoverEnd={handleHoverEnd}
-            />
-          ))}
-        </div>
+        {genresLoading && <div>Loading genres...</div>}
+        {genres.map((genre, idx) => (
+          <MovieRow
+            key={genre.id}
+            title={genre.name}
+            movies={genreMovieQueries[idx].data?.results || []}
+            mediaType="movie"
+          />
+        ))}
       </div>
       {selectedMovie && (
         <TrailerModal

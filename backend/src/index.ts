@@ -299,6 +299,37 @@ app.get("/api/tmdb/discover/tv", async (req, res) => {
   }
 });
 
+app.get('/api/tmdb/tv/genres' , async (req , res) => {
+    try {
+      const TMDB_API_KEY = process.env.TMDB_API_KEY;
+      if(!TMDB_API_KEY){
+        return res.status(500).json({error:"TMDB API key not configured"});
+      }
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/genre/tv/list?language=en`,
+        {
+          headers : {
+            accept : "application/json",
+            Authorization: `Bearer ${TMDB_API_KEY}`,
+          },
+        }
+      );
+      if(!response.ok){
+        const errorText = await response.text();
+        console.error("TMDB genres API error:",response.status,errorText);
+        throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+      }
+        const data = await response.json();
+        res.json(data);
+        console.log("Fetched tv show genres successfuly");
+    }catch(error : any){
+      console.error("TMDB genres error : " , error);
+      res.status(500).json({error : "Failed to fetch genre"});
+    }
+})
+
+
 // Endpoint to fetch TV show details
 app.get("/api/tmdb/tv/:id", async (req, res) => {
   try {
@@ -405,6 +436,102 @@ app.get("/api/list", async (req, res) => {
   } catch (error) {
     console.error("Get user list error:", error);
     res.status(500).json({ error: "Failed to fetch user list" });
+  }
+});
+
+app.get('/api/tmdb/genres' , async (req , res) => {
+    try {
+      const TMDB_API_KEY = process.env.TMDB_API_KEY;
+      if(!TMDB_API_KEY){
+        return res.status(500).json({error:"TMDB API key not configured"});
+      }
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/genre/movie/list?language=en`,
+        {
+          headers : {
+            accept : "application/json",
+            Authorization: `Bearer ${TMDB_API_KEY}`,
+          },
+        }
+      );
+      if(!response.ok){
+        const errorText = await response.text();
+        console.error("TMDB genres API error:",response.status,errorText);
+        throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+      }
+        const data = await response.json();
+        res.json(data);
+    }catch(error : any){
+      console.error("TMDB genres error : " , error);
+      res.status(500).json({error : "Failed to fetch genre"});
+    }
+})
+
+app.get('/api/tmdb/genre/:genreId/movies' ,async(req,res) => {
+  try{
+    const {genreId} = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if(!TMDB_API_KEY){
+      return res.status(500).json({error : "TMDB API KEY not set"});
+    }
+    if(!genreId){
+      return res.status(500).json({error : "No genre provided(ID missing)"});
+    }
+
+    const response = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&sort_by=popularity.desc`,
+      {
+        headers : {
+          accept : "application/json",
+          Authorization : `Bearer ${TMDB_API_KEY}`,
+        },
+      }
+    );
+    if(!response.ok){
+      const errorText = await response.text();
+      console.error("TMDB movies by genre API error:" , response.status,errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  }catch(error : any){
+    console.error("TMDB movies by genre error:", error);
+    res.status(500).json({ error: "Failed to fetch movies by genre", details: error.message });
+  }
+});
+app.get('/api/tmdb/genre/:genreId/shows' ,async(req,res) => {
+  try{
+    const {genreId} = req.params;
+    const TMDB_API_KEY = process.env.TMDB_API_KEY;
+    if(!TMDB_API_KEY){
+      return res.status(500).json({error : "TMDB API KEY not set"});
+    }
+    if(!genreId){
+      return res.status(500).json({error : "No genre provided(ID missing)"});
+    }
+
+    const response = await fetch(
+      `https://api.themoviedb.org/3/discover/tv?with_genres=${genreId}&sort_by=popularity.desc`,
+      {
+        headers : {
+          accept : "application/json",
+          Authorization : `Bearer ${TMDB_API_KEY}`,
+        },
+      }
+    );
+    if(!response.ok){
+      const errorText = await response.text();
+      console.error("TMDB movies by genre API error:" , response.status,errorText);
+      throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  }catch(error : any){
+    console.error("TMDB movies by genre error:", error);
+    res.status(500).json({ error: "Failed to fetch movies by genre", details: error.message });
   }
 });
 

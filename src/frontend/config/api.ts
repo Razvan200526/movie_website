@@ -20,5 +20,7 @@ export const API_CONFIG = {
       ADD: "/api/list/add",
       REMOVE: "/api/list/remove",
     },
+    GENRES:"/api/tmdb/genres",
+    MOVIES_BY_GENRE: (genreId : number) => `/api/tmdb/genre/${genreId}/movies`,
   },
 };
