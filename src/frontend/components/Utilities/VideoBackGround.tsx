@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { apiClient } from "../../services/apiClient";
 import { VideoBackgroundProps } from "../../types";
-import Loading from "../Layout/Loading";
 
 export default function VideoBackGround({
   mediaType,
@@ -9,7 +8,6 @@ export default function VideoBackGround({
   children,
 }: VideoBackgroundProps) {
   const [videoKey, setVideoKey] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const videoRef = useRef<HTMLDivElement>(null);
 
@@ -19,13 +17,11 @@ export default function VideoBackGround({
     if (!movieId) return;
     if (videoCache.current[movieId]) {
       setVideoKey(videoCache.current[movieId]);
-      setIsLoading(false);
       setHasError(false);
       return;
     }
     const fetchVideoKey = async () => {
       console.log(`Fetching video for ID : ${movieId}`);
-      setIsLoading(true);
       setHasError(false);
 
       try {
@@ -50,8 +46,6 @@ export default function VideoBackGround({
         }
       } catch (error) {
         setHasError(true);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchVideoKey();
