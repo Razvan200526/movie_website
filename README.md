@@ -12,10 +12,6 @@
 - Responsive design optimized for both desktop and mobile
 - Smooth transitions and loading states
 
-🔍 **Intelligent Search & Discovery**
-- Real-time movie filtering with debounced search
-- Attractive media cards with hover effects and key metadata
-
 🎭 **Detailed Media Pages**
 - Comprehensive movie/TV show details (ratings, release dates, overviews)
 - Clean, Netflix-style UI with gradient overlays
