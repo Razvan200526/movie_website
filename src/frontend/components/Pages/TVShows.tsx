@@ -13,7 +13,6 @@ interface TVShowsPageProps {
 }
 export default function TVShowsPage({ token: _token, onLogout }: TVShowsPageProps) {
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedShow, setSelectedShow] = useState<MediaItem | null>(null);
   const { data: genresData, isLoading: genresLoading } = useQuery({
     queryKey: ["tv-genres"],
