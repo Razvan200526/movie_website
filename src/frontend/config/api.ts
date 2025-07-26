@@ -12,7 +12,7 @@ export const API_CONFIG = {
       MOVIE_DETAILS: (id: number) => `/api/tmdb/movie/${id}`,
       TV_DETAILS: (id: number) => `/api/tmdb/tv/${id}`,
       MOVIE_VIDEOS: (id: number) => `/api/tmdb/movie/${id}/videos`,
-      TV_VIDEOS: (id: number) => `/api/tmdb/tv/${id}/videos`,
+      TV_VIDEOS: (id: number) => `/api/tmdb/tv/${id}/videos?language=en-US`,
       SEARCH: "/api/tmdb/search",
     },
     LIST: {

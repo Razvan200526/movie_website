@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { MediaItem, MediaCardProps } from "../types";
+import { MediaItem, MediaCardProps } from "../../types";
+import { useCallback } from "react";
 export function MediaCard({
   media,
   mediaType,
@@ -7,16 +8,21 @@ export function MediaCard({
   onHoverStart,
   onHoverEnd,
 }: MediaCardProps) {
-  const posterUrl = media.poster_path
-    ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
-    : "https://via.placeholder.com/500x750?text=No+Image";
 
-  const displayTitle = mediaType === "movie" ? media.title : media.name;
+  const loadMediaTitle = useCallback((media: MediaItem, mediaType: string) => {
+    const posterUrl = media.poster_path
+      ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
+      : "https://via.placeholder.com/500x750?text=No+Image";
 
-  const releaseDate =
-    mediaType === "movie" ? media.release_date : media.first_air_date;
-  const releaseYear = releaseDate?.split("-")[0] || "Unknown";
+    const displayTitle = mediaType === "movie" ? media.title : media.name;
 
+    const releaseDate =
+      mediaType === "movie" ? media.release_date : media.first_air_date;
+    const releaseYear = releaseDate?.split("-")[0] || "Unknown";
+    return [posterUrl, displayTitle, releaseYear];
+  }, [media, mediaType]);
+
+  const [posterUrl, displayTitle, releaseYear] = loadMediaTitle(media, mediaType);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -26,7 +32,6 @@ export function MediaCard({
   }
 
   return (
-    console.log("[MediaCard] Rendering media:", media),
     <div
       className="relative group cursor-pointer"
       onClick={handleClick}
@@ -58,4 +63,3 @@ export function MediaCard({
   );
 }
 
-export type { MediaItem, MediaCardProps };

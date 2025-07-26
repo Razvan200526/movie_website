@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
-import PageSkeleton from "./PageSkeleton";
+import PageSkeleton from "../Layout/PageSkeleton.tsx";
 import { useQuery, useQueries } from "@tanstack/react-query";
-import { apiClient } from "../services/api.ts"
-import { TrailerModal } from "./TrailerModal";
-import VideoBackGround from "./VideoBackGround";
-import { MediaItem } from "../types";
-import MovieRow from "./MovieRow.tsx";
+import { apiClient } from "../../services/apiClient.ts"
+import { TrailerModal } from "../Utilities/TrailerModal.tsx";
+import VideoBackGround from "../Utilities/VideoBackGround.tsx";
+import { MediaItem } from "../../types/index.ts";
+import MovieRow from "../Utilities/MovieRow.tsx";
 
 interface MainAppProps {
   token: string | null;

@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { MediaItem } from "../types";
-import { apiClient } from "../services/api";
+import { useState, useEffect } from "react";
+import { TrailerModalProps } from "../../types";
+import { apiClient } from "../../services/apiClient";
 
-interface TrailerModalProps {
-  movie: MediaItem;
-  onClose: () => void;
-}
 
 export const TrailerModal: React.FC<TrailerModalProps> = ({
   movie,
@@ -31,11 +27,10 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
     };
 
     fetchTrailer();
-  }, [movie.id]);
+  }, [movie]);
 
-  const modalClasses = `transition-all duration-300 transform ${
-    show ? "opacity-100 scale-100" : "opacity-0 scale-90"
-  }`;
+  const modalClasses = `transition-all duration-300 transform ${show ? "opacity-100 scale-100" : "opacity-0 scale-90"
+    }`;
 
   return (
     <div
@@ -51,7 +46,7 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
             src={`https://www.youtube.com/embed/${videoKey}?autoplay=1`}
             title="Trailer"
             className="w-full h-full rounded-lg"
-            allowFullScreen
+            allowFullScreen={false}
           />
         ) : (
           <div className="flex items-center justify-center w-full h-full text-white text-xl bg-gray-800 rounded-lg">

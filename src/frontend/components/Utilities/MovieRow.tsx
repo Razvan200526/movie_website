@@ -1,11 +1,7 @@
 import { MediaCard } from "./MediaCard"
-import { MediaItem } from "../types"
+import { MovieRowProps } from "../../types"
 
-interface MovieRowProps {
-  title?: string;
-  movies: MediaItem[];
-  mediaType: string;
-}
+
 export default function MovieRow({ title, movies, mediaType }: MovieRowProps) {
   return (
     <div className="mb-8">

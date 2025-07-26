@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react";
-import { apiClient } from "../../services/api";
+import { apiClient } from "../../services/apiClient";
 import { LoginRequest } from "../../types";
 
 interface LoginFormProps {

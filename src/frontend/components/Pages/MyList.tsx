@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../services/api';
-import { MediaItem } from '../types';
-import Loading from './Loading';
-import PageSkeleton from './PageSkeleton';
-import MovieRow from './MovieRow';
+import { apiClient } from '../../services/apiClient';
+import { MediaItem } from '../../types';
+import Loading from '../Layout/Loading';
+import PageSkeleton from '../Layout/PageSkeleton';
+import MovieRow from '../Utilities/MovieRow';
 const MyList: React.FC = () => {
   const [list, setList] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);

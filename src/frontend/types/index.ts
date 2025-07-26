@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
-
 export interface MediaItem {
   id: number;
   title?: string;
@@ -64,4 +62,21 @@ export interface MediaCardProps {
   onClick?: (media: MediaItem) => void;
   onHoverStart?: (media: MediaItem) => void;
   onHoverEnd?: () => void;
+}
+export interface MovieRowProps {
+  title?: string;
+  movies: MediaItem[];
+  mediaType: string;
+}
+
+export interface TrailerModalProps {
+  movie: MediaItem;
+  onClose: () => void;
+}
+
+export interface VideoBackgroundProps {
+  mediaType : string;
+  movieId: number;
+  fallbackImage?: string | null;
+  children?: React.ReactNode;
 }

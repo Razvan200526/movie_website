@@ -8,11 +8,11 @@ import {
 import { useEffect, useState } from "react";
 import AuthPage from "./components/Auth/AuthPage";
 import PrivateRoute from "./components/Auth/PrivateRoute";
-import MainApp from "./components/MainApp";
-import TVShowsPage from "./components/TVShowsPage";
-import MediaPage from "./components/MediaPage";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import MyList from "./components/MyList";
+import MainApp from "./components/Pages/Home";
+import TVShowsPage from "./components/Pages/TVShows";
+import MediaPage from "./components/Pages/Media";
+import { ErrorBoundary } from "./components/Error/ErrorBoundary";
+import MyList from "./components/Pages/MyList";
 function AppContent() {
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(() =>

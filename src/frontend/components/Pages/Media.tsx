@@ -1,10 +1,12 @@
-import { useParams, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import VideoBackground from "./VideoBackGround";
-import Loading from "./Loading";
-import { Link } from "react-router-dom";
-import { apiClient } from "../services/api";
-import { MediaItem } from "../types";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
+
+import { apiClient } from "../../services/apiClient";
+import Loading from "../Layout/Loading";
+import VideoBackground from "../Utilities/VideoBackGround";
+
+import type { MediaItem } from "../../types";
+
 
 export default function MediaPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +27,6 @@ export default function MediaPage() {
       setError(null);
 
       try {
-
         const data =
           mediaType === "tv"
             ? await apiClient.getTVDetails(Number(id))
@@ -52,10 +53,10 @@ export default function MediaPage() {
       try {
         const userList = await apiClient.getUserList(token);
         const isInUserList = userList.results.some(
-          (item: any) => item.media_id === media.id,
+          (item: MediaItem) => item?.media_id === media.id,
         );
         setIsInList(isInUserList);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Failed to check list status: ", error);
       }
     };
@@ -79,7 +80,7 @@ export default function MediaPage() {
         await apiClient.addToUserList(token, mediaItem);
         setIsInList(true);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to update list:", error);
       setError(
         `Failed to ${isInList ? "remove from" : "add to"} your list. Please try again.`,
@@ -150,6 +151,7 @@ export default function MediaPage() {
       )}
 
       <VideoBackground
+        mediaType={mediaType}
         movieId={media.id}
         fallbackImage={`https://image.tmdb.org/t/p/original${media.backdrop_path}`}
       >
@@ -196,17 +198,17 @@ export default function MediaPage() {
                 </div>
               </div>
               <div className="flex space-x-4 mt-8">
-                <button className="bg-white text-black px-6 py-3 rounded-md font-bold flex items-center hover:bg-gray-200 transition-colors">
+                <button type="button" className="bg-white text-black px-6 py-3 rounded-md font-bold flex items-center hover:bg-gray-200 transition-colors">
                   <span className="mr-2">▶</span> Play
                 </button>
                 <button
+                  type="button"
                   onClick={handleListToggle}
                   disabled={isUpdatingList}
-                  className={`px-6 py-3 rounded-md font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                    isInList
-                      ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
-                      : "bg-gray-600/70 text-white hover:bg-gray-600"
-                  }`}
+                  className={`px-6 py-3 rounded-md font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${isInList
+                    ? "bg-gray-800 text-white border border-gray-600 hover:bg-gray-700"
+                    : "bg-gray-600/70 text-white hover:bg-gray-600"
+                    }`}
                 >
                   {isUpdatingList ? (
                     <span className="flex items-center">
@@ -214,6 +216,7 @@ export default function MediaPage() {
                       {isInList ? "Removing..." : "Adding..."}
                     </span>
                   ) : (
+                    // biome-ignore lint/complexity/noUselessFragments: <It should show if the show is in my>
                     <>{isInList ? "✓ My List" : "+ My List"}</>
                   )}
                 </button>

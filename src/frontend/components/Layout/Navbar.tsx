@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { LogoutButton } from "./Auth/Logout";
-import { NavbarProps } from "../types";
+import { LogoutButton } from "../Auth/Logout";
+import { NavbarProps } from "../../types";
 
 export default function Navbar({
   onLogout,

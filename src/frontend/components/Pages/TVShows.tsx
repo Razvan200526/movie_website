@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
-import { apiClient } from "../services/api";
-import { MediaItem } from "../types";
-import PageSkeleton from "./PageSkeleton";
-import MovieRow from "./MovieRow";
-import VideoBackGround from "./VideoBackGround";
-import { TrailerModal } from "./TrailerModal";
+import { apiClient } from "../../services/apiClient";
+import { MediaItem } from "../../types";
+import PageSkeleton from "../Layout/PageSkeleton";
+import MovieRow from "../Utilities/MovieRow";
+import VideoBackGround from "../Utilities/VideoBackGround";
+import { TrailerModal } from "../Utilities/TrailerModal";
 
 interface TVShowsPageProps {
   token: string | null;
@@ -29,12 +29,15 @@ export default function TVShowsPage({ token: _token, onLogout }: TVShowsPageProp
     }))
   })
   const firstShow = genreShowQueries[0]?.data?.results?.[0] || null;
+  console.log("firstShow:", firstShow);
+  console.log("firstShow.id:", firstShow?.id);
   return (
     <PageSkeleton
       onLogout={onLogout}
     >
       <div className="relative h-[70vh] w-full bg-gradient-to-t from-black to-transparent overflow-hidden">
         <VideoBackGround
+          mediaType="tv"
           movieId={firstShow ? firstShow.id : 0}
           fallbackImage={firstShow ?
             firstShow?.backdrop_path || firstShow?.poster_path || "" : ""}
