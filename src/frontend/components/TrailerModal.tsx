@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { MediaItem } from "../types";
 import { apiClient } from "../services/api";
 
@@ -33,17 +33,18 @@ export const TrailerModal: React.FC<TrailerModalProps> = ({
     fetchTrailer();
   }, [movie.id]);
 
-  const modalClasses = `transition-all duration-300 transform ${show ? "opacity-100 scale-100" : "opacity-0 scale-90"
-    }`;
+  const modalClasses = `transition-all duration-300 transform ${
+    show ? "opacity-100 scale-100" : "opacity-0 scale-90"
+  }`;
 
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       onClick={onClose}
-    >
+    ()()>
       <div
         className={`relative w-full max-w-2xl aspect-video ${modalClasses}`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={()()(e) => e.stopPropagation()}
       >
         {videoKey ? (
           <iframe
